@@ -22,7 +22,7 @@ def find_button(path):
 options = webdriver.ChromeOptions()
 options.add_experimental_option('w3c', False)
 
-driver = webdriver.Chrome('/home/happymix/hac_for_upload/web_automation/chromedriver', options=options)
+driver = webdriver.Chrome('/home/happymix/hac/web_automation/carvermini_web_automation/chromedriver', options=options)
 
 driver.get('https://mini.carver-amr.com/login/')
 
