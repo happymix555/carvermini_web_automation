@@ -91,14 +91,36 @@ state1_time_count = 2
 state2_time_count = 10
 state3_time_count = 2
 state4_time_count = 50
+print_state_time_count = 5
 
 state1_time_update_flag = 0
 state2_time_update_flag = 0
 state3_time_update_flag = 0
 state4_time_update_flag = 0
+print_state_time_flag = 0
 
-fifteen_min = 60 * 10
+fifteen_min = 60 * 1
 fifteen_flag = 0
+
+csv_location = '/home/happymix/hac/web_automation/battery_record.csv'
+
+page_source = driver.page_source
+soup = bs(page_source, "html.parser")
+dom = etree.HTML(str(soup))
+battery_percent = dom.xpath('//*[@id="inspire"]/div[1]/header/div/div/div[4]/div/span[5]/span')[0].text
+current_time = datetime.now().strftime("%H:%M:%S")
+# print(battery_percent)
+list = []
+list.append(current_time)
+list.append(battery_percent)
+# open the file in the write mode
+# f = open('/home/happymix/hac_for_upload/web_automation/battery_record.csv', 'w', newline='')
+print(list)
+with open(csv_location, 'a+', newline='') as write_obj:
+    # Create a writer object from csv module
+    csv_writer = writer(write_obj)
+    # Add contents of list as last row in the csv file
+    csv_writer.writerow(list)
 
 while True:
     if fifteen_flag == 0:
@@ -157,6 +179,7 @@ while True:
             if state4_time_update_flag == 0:
                 in_state_time = time.time()
                 state4_time_update_flag = 1
+                print("Performing battery recovery")
             if time.time() - in_state_time >= state4_time_count:
                 state4_time_update_flag = 0
                 page_source = driver.page_source
@@ -171,7 +194,7 @@ while True:
                 # open the file in the write mode
                 # f = open('/home/happymix/hac_for_upload/web_automation/battery_record.csv', 'w', newline='')
                 print(list)
-                with open('/home/happymix/hac_for_upload/web_automation/battery_record.csv', 'a+', newline='') as write_obj:
+                with open(csv_location, 'a+', newline='') as write_obj:
                     # Create a writer object from csv module
                     csv_writer = writer(write_obj)
                     # Add contents of list as last row in the csv file
@@ -185,10 +208,18 @@ while True:
                 # f.close()
                 fifteen_flag = 0
                 state = 1
+                print("Battery recovery done")
         else:
             state = 1
     if state == 5:
         break
+    if print_state_time_flag == 0:
+        print_state_time = time.time()
+        print_state_time_flag = 1
+    if time.time() - print_state_time >= print_state_time_count and state4_time_update_flag == 0:
+        print_state_time_flag = 0
+        print("perform battery rocovery in : " + str(int(fifteen_min - (time.time() - fifteen_time))) + " s")
+
 
 
 # # # driver = webdriver.Chrome('/home/happymix/hac/carver_mini/code/web_automation/chromedriver', options=options)
